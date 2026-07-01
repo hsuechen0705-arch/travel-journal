@@ -42,9 +42,9 @@
 }
 body{font-family:var(--sans);background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden;font-weight:300}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;font-weight:300}
-input,textarea,select{font-family:var(--sans);font-size:14px;font-weight:300;border:1px solid var(--border);border-radius:10px;padding:9px 13px;width:100%;color:var(--ink);background:var(--white);outline:none;resize:none;line-height:1.7}
+input,textarea,select{font-family:var(--sans);font-size:14px;font-weight:300;border:1px solid var(--border);border-radius:10px;padding:9px 13px;width:100%;color:var(--ink);background:var(--white);outline:none;resize:vertical;line-height:1.7}
 input:focus,textarea:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(154,120,48,0.1)}
-textarea{min-height:72px}
+textarea{min-height:60px;resize:vertical}
 .screen{display:none;flex-direction:column;min-height:100vh}
 .screen.active{display:flex}
 
@@ -891,7 +891,7 @@ function renderWishlist(){
         <input id="wish-place" placeholder="地點（選填）" style="width:100%;padding:9px 12px;border-radius:9px;border:1px solid var(--border);font-size:13px;margin-bottom:8px">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
           <input id="wish-date" placeholder="目標出發時間（選填）" style="padding:9px 12px;border-radius:9px;border:1px solid var(--border);font-size:13px">
-          <textarea id="wish-note" placeholder="備註（選填）" rows="2" style="padding:9px 12px;border-radius:9px;border:1px solid var(--border);font-size:13px;resize:none;line-height:1.6"></textarea>
+          <textarea id="wish-note" placeholder="備註（選填）" rows="2" style="padding:9px 12px;border-radius:9px;border:1px solid var(--border);font-size:13px;resize:vertical;line-height:1.6;min-height:60px"></textarea>
         </div>
         <button onclick="addWish()" style="width:100%;padding:10px;border-radius:10px;background:#C47880;color:white;border:none;font-size:14px;cursor:pointer;font-weight:500">＋ 加入願望清單</button>
       </div>
@@ -1188,7 +1188,7 @@ function makeCard(ev){
         <div><div class="ef-lbl">預約時間</div><input id="ei-rt-${ev.id}" value="${ev.resv?.time||''}" placeholder="12:00"></div>
         <div><div class="ef-lbl">人數</div><input id="ei-rp-${ev.id}" value="${ev.resv?.p||''}" placeholder="2"></div>
         <div class="rg-full"><div class="ef-lbl">確認編號</div><input id="ei-rr-${ev.id}" value="${ev.resv?.ref||''}" placeholder="訂單號"></div>
-        <div class="rg-full"><div class="ef-lbl">備註</div><textarea id="ei-rn-${ev.id}" rows="2">${ev.resv?.note||''}</textarea></div>
+        <div class="rg-full"><div class="ef-lbl">備註</div><textarea id="ei-rn-${ev.id}" rows="3" style="min-height:60px;resize:vertical">${ev.resv?.note||''}</textarea></div>
       </div>
       <div class="edit-btns">
         <button class="ebtn-cancel" onclick="toggleEdit(${ev.id})">取消</button>
