@@ -262,9 +262,9 @@ textarea{min-height:60px;resize:vertical}
 
 /* resv detail */
 .resv-detail{display:flex;flex-direction:column;gap:4px;margin-top:2px}
-.resv-row{display:flex;gap:10px;font-size:13px;font-weight:300}
+.resv-row{display:flex;gap:10px;font-size:13px;font-weight:300;flex-wrap:wrap;align-items:flex-start}
 .resv-k{font-size:11px;color:var(--ink3);min-width:56px;padding-top:1px;font-weight:400;letter-spacing:.3px}
-.resv-v{color:var(--ink2)}
+.resv-v{color:var(--ink2);word-break:break-word;overflow-wrap:break-word;flex:1}
 
 /* photos */
 .photo-strip{display:flex;gap:7px;flex-wrap:wrap;padding-top:7px}
