@@ -289,6 +289,23 @@ textarea{min-height:60px;resize:vertical}
 .act i{font-size:14px}
 .act.map-ok{color:var(--caramel)}
 .act-sep{width:1px;height:13px;background:var(--border);flex-shrink:0}
+.map-menu{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--card);border-radius:20px 20px 0 0;
+  padding:16px 16px 40px;z-index:500;
+  box-shadow:0 -4px 24px rgba(58,48,40,0.12);
+  display:none
+}
+.map-menu.open{display:block}
+.map-menu-title{font-family:var(--serif);font-size:15px;font-weight:600;color:var(--ink);margin-bottom:14px;text-align:center}
+.map-menu-btn{
+  width:100%;padding:13px;border-radius:10px;border:1px solid var(--border);
+  background:var(--white);font-size:14px;color:var(--ink);cursor:pointer;
+  margin-bottom:8px;text-align:left;display:flex;align-items:center;gap:10px
+}
+.map-menu-btn:last-child{margin-bottom:0}
+.map-menu-overlay{position:fixed;inset:0;z-index:499;background:rgba(58,48,40,0.3);display:none}
+.map-menu-overlay.open{display:block}
 .act-resv-btn{
   font-size:12px;font-weight:500;cursor:pointer;border:1px solid;
   padding:4px 11px;border-radius:20px;transition:all .15s;background:none;white-space:nowrap
@@ -1278,6 +1295,31 @@ function quickResv(id){
   else if(ev.resvTags.length===0)ev.resvTags=['pending'];
   save();refreshResvUI(id,ev);
 }
+let _mapMenuEvId=null, _mapMenuUrl=null;
+function openMapMenu(evId, url){
+  _mapMenuEvId=evId; _mapMenuUrl=url;
+  const ev=(curTrip?.events||[]).find(e=>e.id===evId);
+  document.getElementById('map-menu-title').textContent = ev?.name||'地圖選項';
+  document.getElementById('map-menu').classList.add('open');
+  document.getElementById('map-menu-overlay').classList.add('open');
+}
+function closeMapMenu(){
+  document.getElementById('map-menu').classList.remove('open');
+  document.getElementById('map-menu-overlay').classList.remove('open');
+  _mapMenuEvId=null; _mapMenuUrl=null;
+}
+function doOpenMap(){
+  if(_mapMenuUrl) window.open(_mapMenuUrl,'_blank');
+  closeMapMenu();
+}
+function doChangeMap(){
+  closeMapMenu();
+  if(_mapMenuEvId===null) return;
+  setTimeout(()=>{
+    const row=document.getElementById('mr-'+_mapMenuEvId);
+    if(row){row.classList.add('open');row.querySelector('input')?.focus();}
+  },200);
+}
 function showMapR(id){document.getElementById('mr-'+id)?.classList.toggle('open')}
 function saveMap(id){
   const inp=document.getElementById('mi-'+id);if(!inp?.value.trim())return;
@@ -1721,6 +1763,15 @@ DB.trips.forEach(t=>{
 save();
 renderHome();
 </script>
+<!-- 地圖選單 -->
+<div class="map-menu-overlay" id="map-menu-overlay" onclick="closeMapMenu()"></div>
+<div class="map-menu" id="map-menu">
+  <div class="map-menu-title" id="map-menu-title">地圖選項</div>
+  <button class="map-menu-btn" id="map-menu-open" onclick="doOpenMap()">🗺 開啟 Google Maps</button>
+  <button class="map-menu-btn" onclick="doChangeMap()">✎ 更換地圖連結</button>
+  <button class="map-menu-btn" style="color:var(--ink3)" onclick="closeMapMenu()">取消</button>
+</div>
+
 <script>
 (function(){
   // 用 Canvas 直接繪製 icon，不依賴外部資源
