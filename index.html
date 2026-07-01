@@ -1153,7 +1153,7 @@ function makeCard(ev){
         ${ev.resv.time?`<div class="resv-row"><span class="resv-k">時間</span><span class="resv-v">${ev.resv.time}</span></div>`:''}
         ${ev.resv.p?`<div class="resv-row"><span class="resv-k">人數</span><span class="resv-v">${ev.resv.p} 人</span></div>`:''}
         ${ev.resv.ref?`<div class="resv-row"><span class="resv-k">確認編號</span><span class="resv-v">${ev.resv.ref}</span></div>`:''}
-        ${ev.resv.note?`<div class="resv-row"><span class="resv-k">備註</span><span class="resv-v">${ev.resv.note}</span></div>`:''}
+        ${ev.resv.note?`<div class="resv-row" style="align-items:flex-start"><span class="resv-k">備註</span><div class="resv-v" style="white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;flex:1;font-size:13px;color:var(--ink2);font-weight:300;line-height:1.7">${ev.resv.note}</div></div>`:''}
       </div>
     </div>`:''}
     <div class="ev-actions">
