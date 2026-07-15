@@ -764,45 +764,10 @@ input[type=file]{display:none}
         </button>
       </div>
     </div>
-    <div class="mf"><div class="mf-lbl">機票狀態</div>
-      <div style="display:flex;flex-direction:column;gap:8px" id="flight-editor">
-        <div style="background:var(--bg);border-radius:10px;padding:12px;border:1px solid var(--border-lt)">
-          <div style="font-size:11px;color:var(--ink3);margin-bottom:8px;letter-spacing:.5px">去程</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-            <div><div class="mf-lbl">出發（例：TPE）</div><input id="f-fl-go-from" placeholder="TPE"></div>
-            <div><div class="mf-lbl">抵達（例：HND）</div><input id="f-fl-go-to" placeholder="HND"></div>
-            <div><div class="mf-lbl">日期</div><input id="f-fl-go-date" placeholder="2025.07.02"></div>
-            <div><div class="mf-lbl">航班號</div><input id="f-fl-go-num" placeholder="例：MM860"></div>
-            <div><div class="mf-lbl">起飛時間</div><input id="f-fl-go-dep" placeholder="20:25"></div>
-            <div><div class="mf-lbl">抵達時間</div><input id="f-fl-go-arr" placeholder="00:45(+1)"></div>
-            <div><div class="mf-lbl">出票狀態</div>
-              <select id="f-fl-go-status">
-                <option value="pending">尚未出票</option>
-                <option value="confirmed">已出票</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div style="background:var(--bg);border-radius:10px;padding:12px;border:1px solid var(--border-lt)">
-          <div style="font-size:11px;color:var(--ink3);margin-bottom:8px;letter-spacing:.5px">回程</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-            <div><div class="mf-lbl">出發（例：HND）</div><input id="f-fl-ret-from" placeholder="HND"></div>
-            <div><div class="mf-lbl">抵達（例：TPE）</div><input id="f-fl-ret-to" placeholder="TPE"></div>
-            <div><div class="mf-lbl">日期</div><input id="f-fl-ret-date" placeholder="2025.07.06"></div>
-            <div><div class="mf-lbl">航班號</div><input id="f-fl-ret-num" placeholder="例：MM861"></div>
-            <div><div class="mf-lbl">起飛時間</div><input id="f-fl-ret-dep" placeholder="06:00"></div>
-            <div><div class="mf-lbl">抵達時間</div><input id="f-fl-ret-arr" placeholder="08:35"></div>
-            <div><div class="mf-lbl">出票狀態</div>
-              <select id="f-fl-ret-status">
-                <option value="pending">尚未出票</option>
-                <option value="confirmed">已出票</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="mf"><div class="mf-lbl" style="display:flex;align-items:center;justify-content:space-between">機票航班<button type="button" onclick="addFlightSegment()" style="font-size:12px;color:#C47880;background:none;border:none;cursor:pointer;font-weight:500">＋ 新增航段</button></div>
+      <div id="flight-segments-wrap" style="display:flex;flex-direction:column;gap:8px"></div>
     </div>
-    <div class="mf"><div class="mf-lbl">接送機</div>
+        <div class="mf"><div class="mf-lbl">接送機</div>
       <div style="display:flex;flex-direction:column;gap:8px">
         <div style="background:var(--bg);border-radius:10px;padding:12px;border:1px solid var(--border-lt)">
           <div style="font-size:11px;color:var(--ink3);margin-bottom:8px;letter-spacing:.5px">去程接機</div>
