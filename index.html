@@ -770,7 +770,7 @@ input[type=file]{display:none}
         <div class="mf"><div class="mf-lbl">接送機</div>
       <div style="display:flex;flex-direction:column;gap:8px">
         <div style="background:var(--bg);border-radius:10px;padding:12px;border:1px solid var(--border-lt)">
-          <div style="font-size:11px;color:var(--ink3);margin-bottom:8px;letter-spacing:.5px">去程接機</div>
+          <div style="font-size:11px;color:var(--ink3);margin-bottom:8px;letter-spacing:.5px">🛬 去程接機（抵達後接至飯店）</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
             <div><div class="mf-lbl">預約狀態</div>
               <select id="f-tr-arr-status">
@@ -780,11 +780,39 @@ input[type=file]{display:none}
               </select>
             </div>
             <div><div class="mf-lbl">接機時間</div><input id="f-tr-arr-time" placeholder="01:30"></div>
-            <div class="rg-full" style="grid-column:1/-1"><div class="mf-lbl">備註</div><textarea id="f-tr-arr-note" rows="2" placeholder="車種、司機資訊…" style="resize:vertical"></textarea></div>
+            <div style="grid-column:1/-1"><div class="mf-lbl">備註</div><textarea id="f-tr-arr-note" rows="2" placeholder="車種、司機資訊…" style="resize:vertical"></textarea></div>
           </div>
         </div>
         <div style="background:var(--bg);border-radius:10px;padding:12px;border:1px solid var(--border-lt)">
-          <div style="font-size:11px;color:var(--ink3);margin-bottom:8px;letter-spacing:.5px">回程送機</div>
+          <div style="font-size:11px;color:var(--ink3);margin-bottom:8px;letter-spacing:.5px">🚗 去程送機（出發前送至機場）</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div><div class="mf-lbl">預約狀態</div>
+              <select id="f-tr-go-dep-status">
+                <option value="none">不需要</option>
+                <option value="pending">待預約</option>
+                <option value="confirmed">已預約</option>
+              </select>
+            </div>
+            <div><div class="mf-lbl">送機時間</div><input id="f-tr-go-dep-time" placeholder="17:00"></div>
+            <div style="grid-column:1/-1"><div class="mf-lbl">備註</div><textarea id="f-tr-go-dep-note" rows="2" placeholder="車種、司機資訊…" style="resize:vertical"></textarea></div>
+          </div>
+        </div>
+        <div style="background:var(--bg);border-radius:10px;padding:12px;border:1px solid var(--border-lt)">
+          <div style="font-size:11px;color:var(--ink3);margin-bottom:8px;letter-spacing:.5px">🛬 回程接機（回國抵達後接回）</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div><div class="mf-lbl">預約狀態</div>
+              <select id="f-tr-ret-arr-status">
+                <option value="none">不需要</option>
+                <option value="pending">待預約</option>
+                <option value="confirmed">已預約</option>
+              </select>
+            </div>
+            <div><div class="mf-lbl">接機時間</div><input id="f-tr-ret-arr-time" placeholder="08:35"></div>
+            <div style="grid-column:1/-1"><div class="mf-lbl">備註</div><textarea id="f-tr-ret-arr-note" rows="2" placeholder="車種、司機資訊…" style="resize:vertical"></textarea></div>
+          </div>
+        </div>
+        <div style="background:var(--bg);border-radius:10px;padding:12px;border:1px solid var(--border-lt)">
+          <div style="font-size:11px;color:var(--ink3);margin-bottom:8px;letter-spacing:.5px">🚗 回程送機（回程前送至機場）</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
             <div><div class="mf-lbl">預約狀態</div>
               <select id="f-tr-dep-status">
@@ -794,7 +822,7 @@ input[type=file]{display:none}
               </select>
             </div>
             <div><div class="mf-lbl">送機時間</div><input id="f-tr-dep-time" placeholder="03:30"></div>
-            <div class="rg-full" style="grid-column:1/-1"><div class="mf-lbl">備註</div><textarea id="f-tr-dep-note" rows="2" placeholder="車種、司機資訊…" style="resize:vertical"></textarea></div>
+            <div style="grid-column:1/-1"><div class="mf-lbl">備註</div><textarea id="f-tr-dep-note" rows="2" placeholder="車種、司機資訊…" style="resize:vertical"></textarea></div>
           </div>
         </div>
       </div>
@@ -1130,18 +1158,18 @@ function renderFlightBar(){
   }
   // 接送機
   const tr=curTrip.transfer||{};
-  const tra=tr.arrival||{}, trd=tr.departure||{};
+  const tra=tr.arrival||{}, trgd=tr.goDeparture||{}, trra=tr.retArrival||{}, trd=tr.departure||{};
   const trItems=[];
-  if(tra.status&&tra.status!=='none'){
-    const dc2=tra.status==='confirmed'?'sdot-sage':'sdot-gold';
-    const lbl2=tra.status==='confirmed'?'接機已預約':'接機待預約';
-    trItems.push(`<div class="fl-item" onclick="openEditCurTrip()"><span class="sdot ${dc2}"></span>${lbl2}</div>`);
-  }
-  if(trd.status&&trd.status!=='none'){
-    const dc3=trd.status==='confirmed'?'sdot-sage':'sdot-gold';
-    const lbl3=trd.status==='confirmed'?'送機已預約':'送機待預約';
-    trItems.push(`<div class="fl-item" onclick="openEditCurTrip()"><span class="sdot ${dc3}"></span>${lbl3}</div>`);
-  }
+  const trDefs=[
+    [tra,'去程接機'],[trgd,'去程送機'],[trra,'回程接機'],[trd,'回程送機']
+  ];
+  trDefs.forEach(([t2,lbl])=>{
+    if(t2.status&&t2.status!=='none'){
+      const dc2=t2.status==='confirmed'?'sdot-sage':'sdot-gold';
+      const st=t2.status==='confirmed'?'已預約':'待預約';
+      trItems.push(`<div class="fl-item" onclick="openEditCurTrip()"><span class="sdot ${dc2}"></span>${lbl}${st}</div>`);
+    }
+  });
   if(trItems.length) bar.innerHTML+=trItems.join('');
 }
 
@@ -1428,10 +1456,17 @@ function openEditTrip(id){
   renderFlightSegments();
   // 載入接送機資料
   const tr=t.transfer||{};
-  const tra=tr.arrival||{}, trd=tr.departure||{};
-  const trFlds=[['f-tr-arr-time',tra.time||''],['f-tr-arr-note',tra.note||''],['f-tr-dep-time',trd.time||''],['f-tr-dep-note',trd.note||'']];
+  const tra=tr.arrival||{}, trgd=tr.goDeparture||{}, trra=tr.retArrival||{}, trd=tr.departure||{};
+  const trFlds=[
+    ['f-tr-arr-time',tra.time||''],['f-tr-arr-note',tra.note||''],
+    ['f-tr-go-dep-time',trgd.time||''],['f-tr-go-dep-note',trgd.note||''],
+    ['f-tr-ret-arr-time',trra.time||''],['f-tr-ret-arr-note',trra.note||''],
+    ['f-tr-dep-time',trd.time||''],['f-tr-dep-note',trd.note||''],
+  ];
   trFlds.forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.value=val;});
   const tas=document.getElementById('f-tr-arr-status');if(tas)tas.value=tra.status||'none';
+  const tgds=document.getElementById('f-tr-go-dep-status');if(tgds)tgds.value=trgd.status||'none';
+  const tras=document.getElementById('f-tr-ret-arr-status');if(tras)tras.value=trra.status||'none';
   const tds=document.getElementById('f-tr-dep-status');if(tds)tds.value=trd.status||'none';
 
   openM('m-trip');
@@ -1495,9 +1530,12 @@ function buildFlightsFromForm(){
 }
 function buildTransferFromForm(){
   function fv(id){return document.getElementById(id)?.value.trim()||'';}
+  function sv(id){return document.getElementById(id)?.value||'none';}
   return{
-    arrival:{status:document.getElementById('f-tr-arr-status')?.value||'none',time:fv('f-tr-arr-time'),note:fv('f-tr-arr-note')},
-    departure:{status:document.getElementById('f-tr-dep-status')?.value||'none',time:fv('f-tr-dep-time'),note:fv('f-tr-dep-note')}
+    arrival:{status:sv('f-tr-arr-status'),time:fv('f-tr-arr-time'),note:fv('f-tr-arr-note')},
+    goDeparture:{status:sv('f-tr-go-dep-status'),time:fv('f-tr-go-dep-time'),note:fv('f-tr-go-dep-note')},
+    retArrival:{status:sv('f-tr-ret-arr-status'),time:fv('f-tr-ret-arr-time'),note:fv('f-tr-ret-arr-note')},
+    departure:{status:sv('f-tr-dep-status'),time:fv('f-tr-dep-time'),note:fv('f-tr-dep-note')}
   };
 }
 
