@@ -1457,19 +1457,10 @@ function openEditTrip(id){
   document.getElementById('btn-dt').style.display='block';
   selWho=t.who||'both';setEP(selE);setCP(selC);setWho(selWho);
   // 載入機票資料
-  const go=(t.flights||[])[0]||{};
-  const ret=(t.flights||[])[1]||{};
-  const flds=[
-    ['f-fl-go-from',go.from||''],['f-fl-go-to',go.to||''],
-    ['f-fl-go-date',go.date||''],['f-fl-go-dep',go.dep||''],
-    ['f-fl-go-arr',go.arr||''],
-    ['f-fl-ret-from',ret.from||''],['f-fl-ret-to',ret.to||''],
-    ['f-fl-ret-date',ret.date||''],['f-fl-ret-dep',ret.dep||''],
-    ['f-fl-ret-arr',ret.arr||''],
-  ];
-  flds.forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.value=val;});
-  const gs=document.getElementById('f-fl-go-status');if(gs)gs.value=go.status||'pending';
-  const rs2=document.getElementById('f-fl-ret-status');if(rs2)rs2.value=ret.status||'pending';
+  _flightSegments=(t.flights||[]).length>0
+    ? t.flights.map(f=>({dir:f.dir||'去程',from:f.from||'',to:f.to||'',num:f.num||'',date:f.date||'',dep:f.dep||'',arr:f.arr||'',status:f.status||'pending'}))
+    : [{dir:'去程',from:'',to:'',num:'',date:'',dep:'',arr:'',status:'pending'},{dir:'回程',from:'',to:'',num:'',date:'',dep:'',arr:'',status:'pending'}];
+  renderFlightSegments();
   // 載入接送機資料
   const tr=t.transfer||{};
   const tra=tr.arrival||{}, trd=tr.departure||{};
@@ -1477,28 +1468,65 @@ function openEditTrip(id){
   trFlds.forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.value=val;});
   const tas=document.getElementById('f-tr-arr-status');if(tas)tas.value=tra.status||'none';
   const tds=document.getElementById('f-tr-dep-status');if(tds)tds.value=trd.status||'none';
-  // 載入航班號
-  const goEl=document.getElementById('f-fl-go-num');if(goEl)goEl.value=(t.flights||[])[0]?.num||'';
-  const retEl=document.getElementById('f-fl-ret-num');if(retEl)retEl.value=(t.flights||[])[1]?.num||'';
+
   openM('m-trip');
 }
 function openEditCurTrip(){if(curTrip)openEditTrip(curTrip.id)}
+// 記錄動態航段
+let _flightSegments=[];
+
+function addFlightSegment(data){
+  const idx=_flightSegments.length;
+  const seg=data||{dir:'',from:'',to:'',num:'',date:'',dep:'',arr:'',status:'pending'};
+  _flightSegments.push(seg);
+  renderFlightSegments();
+}
+
+function removeFlightSegment(idx){
+  _flightSegments.splice(idx,1);
+  renderFlightSegments();
+}
+
+function renderFlightSegments(){
+  const wrap=document.getElementById('flight-segments-wrap');
+  if(!wrap)return;
+  wrap.innerHTML=_flightSegments.map((seg,i)=>`
+    <div style="background:var(--bg);border-radius:10px;padding:12px;border:1px solid var(--border-lt);position:relative">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <select onchange="updateSeg(${i},'dir',this.value)" style="font-size:11px;padding:3px 8px;border-radius:6px;border:1px solid var(--border);background:var(--white);color:var(--ink);font-weight:500">
+          <option value="去程" ${seg.dir==='去程'?'selected':''}>去程</option>
+          <option value="轉機" ${seg.dir==='轉機'?'selected':''}>轉機</option>
+          <option value="回程" ${seg.dir==='回程'?'selected':''}>回程</option>
+          <option value="去程1" ${seg.dir==='去程1'?'selected':''}>去程第1段</option>
+          <option value="去程2" ${seg.dir==='去程2'?'selected':''}>去程第2段</option>
+          <option value="回程1" ${seg.dir==='回程1'?'selected':''}>回程第1段</option>
+          <option value="回程2" ${seg.dir==='回程2'?'selected':''}>回程第2段</option>
+        </select>
+        <button onclick="removeFlightSegment(${i})" style="font-size:13px;color:var(--ink3);background:none;border:none;cursor:pointer">✕</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div><div class="mf-lbl">出發</div><input value="${seg.from}" placeholder="例：TPE" oninput="updateSeg(${i},'from',this.value)" style="padding:7px 10px;border-radius:8px;border:1px solid var(--border);font-size:13px;width:100%"></div>
+        <div><div class="mf-lbl">抵達</div><input value="${seg.to}" placeholder="例：HND" oninput="updateSeg(${i},'to',this.value)" style="padding:7px 10px;border-radius:8px;border:1px solid var(--border);font-size:13px;width:100%"></div>
+        <div><div class="mf-lbl">航班號</div><input value="${seg.num}" placeholder="例：MM860" oninput="updateSeg(${i},'num',this.value)" style="padding:7px 10px;border-radius:8px;border:1px solid var(--border);font-size:13px;width:100%"></div>
+        <div><div class="mf-lbl">日期</div><input value="${seg.date}" placeholder="2025.07.02" oninput="updateSeg(${i},'date',this.value)" style="padding:7px 10px;border-radius:8px;border:1px solid var(--border);font-size:13px;width:100%"></div>
+        <div><div class="mf-lbl">起飛</div><input value="${seg.dep}" placeholder="20:25" oninput="updateSeg(${i},'dep',this.value)" style="padding:7px 10px;border-radius:8px;border:1px solid var(--border);font-size:13px;width:100%"></div>
+        <div><div class="mf-lbl">抵達時間</div><input value="${seg.arr}" placeholder="00:45" oninput="updateSeg(${i},'arr',this.value)" style="padding:7px 10px;border-radius:8px;border:1px solid var(--border);font-size:13px;width:100%"></div>
+        <div style="grid-column:1/-1"><div class="mf-lbl">出票狀態</div>
+          <div style="display:flex;gap:8px">
+            <button type="button" onclick="updateSeg(${i},'status','confirmed');renderFlightSegments()" style="flex:1;padding:7px;border-radius:8px;font-size:12px;cursor:pointer;border:1px solid ${seg.status==='confirmed'?'var(--sage-bdr)':'var(--border)'};background:${seg.status==='confirmed'?'var(--sage-bg)':'var(--white)'};color:${seg.status==='confirmed'?'var(--sage)':'var(--ink3)'}">✓ 已出票</button>
+            <button type="button" onclick="updateSeg(${i},'status','pending');renderFlightSegments()" style="flex:1;padding:7px;border-radius:8px;font-size:12px;cursor:pointer;border:1px solid ${seg.status==='pending'?'rgba(154,120,48,0.4)':'var(--border)'};background:${seg.status==='pending'?'var(--gold-pale)':'var(--white)'};color:${seg.status==='pending'?'var(--gold)':'var(--ink3)'}">◌ 尚未出票</button>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function updateSeg(idx,field,val){
+  if(_flightSegments[idx]) _flightSegments[idx][field]=val;
+}
+
 function buildFlightsFromForm(){
-  function fv(id){return document.getElementById(id)?.value.trim()||'';}
-  const flights=[];
-  const goFrom=fv('f-fl-go-from'), goTo=fv('f-fl-go-to');
-  if(goFrom||goTo){
-    flights.push({dir:'去程',from:goFrom,to:goTo,num:fv('f-fl-go-num'),
-      date:fv('f-fl-go-date'),dep:fv('f-fl-go-dep'),arr:fv('f-fl-go-arr'),
-      status:document.getElementById('f-fl-go-status')?.value||'pending'});
-  }
-  const retFrom=fv('f-fl-ret-from'), retTo=fv('f-fl-ret-to');
-  if(retFrom||retTo){
-    flights.push({dir:'回程',from:retFrom,to:retTo,num:fv('f-fl-ret-num'),
-      date:fv('f-fl-ret-date'),dep:fv('f-fl-ret-dep'),arr:fv('f-fl-ret-arr'),
-      status:document.getElementById('f-fl-ret-status')?.value||'pending'});
-  }
-  return flights;
+  return _flightSegments.filter(s=>s.from||s.to||s.num);
 }
 function buildTransferFromForm(){
   function fv(id){return document.getElementById(id)?.value.trim()||'';}
